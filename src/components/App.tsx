@@ -1,0 +1,380 @@
+import { useState, useEffect } from 'react'
+import type {Screen} from './types'
+import type { ShopItem } from './shopitems'
+import type { Event } from './Event'
+import type { GameState } from './gamestate'
+import type { whereToGo } from './whereToGo'
+
+import './App.css'
+
+import Start from "./Start"
+import MainMenu from "./MainMenu"
+import Configuration from './Configuration'
+import ProfileBar from "./ProfileBar"
+import Canvas from "./Canvas"
+import CurrencyBar from './CurrencyBar'
+import CurrencyHistory from './CurrencyHistory'
+import NavBar from './NavBar'
+import UserCustom from './UserCustom'
+import Items from './Items'
+import Shop from './Shop'
+import GameOver from './GameOver'
+import Transition from './Transition'
+import Kitchen from './kitchen'
+
+function App() {
+  
+  const [screen, setScreen] = useState<Screen>("start");
+  const [name, setName] = useState("Guilherme");
+  const [profilePicture, setProfilePicture] = useState("https://img.icons8.com/?size=100&id=LypZSIS7xVVW&format=png&color=000000");
+  const [items, setItems] = useState<ShopItem[]>([])
+  const [currentGameOver, setCurrentGameOver] = useState(0);
+  const [whereToGo, setWhereToGo] = useState<whereToGo>("tvToShop");
+  const itemEffect = [
+    (ammount: number) => {
+      let itemName = "Caixa de Som";
+      setIncome(prev => prev * (1 + (0.10 * ammount)));
+    },
+    (ammount: number) => {
+      let itemName = "Ar Condicionado";
+      console.log(money);
+      setMoney(prev => prev + 50);
+      setExpense(prev => prev * (1 + (0.01 * ammount)));
+      console.log(money)
+    },
+    (ammount: number) => {
+      let itemName = "Cama";
+      console.log(money);
+      console.log(money)
+    },
+    (ammount: number) => {
+      let itemName = "Computador";
+      console.log(money);
+      console.log(money)
+    },
+    (ammount: number) => {
+      let itemName = "Televisão";
+      console.log(money);
+      console.log(money)
+    },
+    (ammount: number) => {
+      let itemName = "Rádio";
+      console.log(money);
+      console.log(money)
+    },
+    (ammount: number) => {
+      let itemName = "Gato";
+      console.log(money);
+      setIncome(prev => prev + 1);
+      console.log(money)
+    },
+    (ammount: number) => {
+      let itemName = "Cassino";
+      console.log(money);
+      let roll = Math.random() * 100;
+
+      if(roll > 15){
+        setExpense(prev => prev + (prev * 0.5));
+      }
+      else if(roll <= 15){
+        setMoney(prev => prev + 1500)
+      }
+      console.log(money)
+    },
+    (ammount: number) => {
+      let itemName = "Terminar o jogo";
+      console.log(money);
+      setCurrentGameOver(1);
+      setScreen("gameover");
+      console.log(money)
+    },
+  ]
+  const [shopItems, setShopItems] = useState<ShopItem[]>([
+    
+    {
+      id: 0,
+      name: "Caixa de Som",
+      image: "https://img.icons8.com/?size=100&id=9422&format=png&color=000000",
+      price: 150,
+      ammount: 1,
+      description: "Você se torna mais feliz, aumente seu salário atual em 10%",
+      effect: itemEffect[0],
+    },
+    {
+      id: 1,
+      name: "Ar-condicionado",
+      image: "https://img.icons8.com/?size=100&id=8086&format=png&color=000000",
+      price: 1000,
+      ammount: 1,
+      description: "Você gosta de um friozinho, aumente em 5% o seu gasto atual mas ganhe R$300 reais pela sua felicidade",
+      effect: itemEffect[1],
+    },
+    {
+      id: 2,
+      name: "Cama",
+      image: "https://img.icons8.com/?size=100&id=8021&format=png&color=000000",
+      price: 500,
+      ammount: 1,
+      description: "Você não tinha aonde dormir... Agora tem!",
+      effect: itemEffect[2],
+    },
+    {
+      id: 3,
+      name: "Computador",
+      image: "https://img.icons8.com/?size=100&id=9913&format=png&color=000000",
+      price: 1500,
+      ammount: 1,
+      description: "Não tem internet!",
+      effect: itemEffect[3],
+    },
+    {
+      id: 4,
+      name: "Televisão",
+      image: "https://img.icons8.com/?size=100&id=9989&format=png&color=000000",
+      price: 150,
+      ammount: 1,
+      description: "Entretenimento!",
+      effect: itemEffect[4],
+    },
+    {
+      id: 5,
+      name: "Rádio",
+      image: "https://img.icons8.com/?size=100&id=9410&format=png&color=000000",
+      price: 2000,
+      ammount: 1,
+      description: "Está vindo uma coisa espetacular em sua direção!",
+      effect: itemEffect[5],
+    },
+    {
+      id: 6,
+      name: "Gato",
+      image: "https://img.icons8.com/?size=100&id=C6Z1BNfFZ4xL&format=png&color=000000",
+      price: 0,
+      ammount: 1,
+      description: "Você adotou um gato, todo dia ele encontra 1 real no chão!",
+      effect: itemEffect[6],
+    },
+    {
+      id: 7,
+      name: "Cassino",
+      image: "https://img.icons8.com/?size=100&id=3umCLcxl0hDj&format=png&color=000000",
+      price: 500,
+      ammount: 100,
+      description: "Aposte 500 reais, se ganhar triplique o valor apostado, senão aumente os custos pela metade",
+      effect: itemEffect[7],
+    },
+    {
+      id: 8,
+      name: "Terminar o jogo",
+      image: "https://img.icons8.com/?size=100&id=qaDBSQJh1PHW&format=png&color=000000",
+      price: 10000,
+      ammount: 100,
+      description: "Saia de casa e seja feliz!",
+      effect: itemEffect[8],
+    },
+  ]);
+  const eventEffect = [
+    () => {
+      console.log("que dia normal!");
+    },
+    () => {
+      console.log("que dia ruim!");
+      setMoney(prev => prev - 100);
+      setExpense(prev => prev * 1.1);
+    },
+    () => {
+      console.log("que dia bom!");
+      setMoney(prev => prev + 100);
+    }
+  ]
+  const [eventsList, setEventsList] = useState<Event[]>([
+    {
+      name: "Dia normal",
+      image: "https://img.icons8.com/?size=100&id=9JCaiJSEnP5k&format=png&color=000000",
+      context: "Um dia mundano e tranquilo, não aconteceu nada de ruim e nada de bom",
+      effect: eventEffect[0]
+    },
+    {
+      name: "Dia ruim",
+      image: "https://img.icons8.com/?size=100&id=CTNJTslTK4xy&format=png&color=000000",
+      context: "Um dia sofrido e injusto, perca R$100 reais e aumente seus custos em 10%",
+      effect: eventEffect[1]
+    },
+    {
+      name: "Dia bom",
+      image: "https://img.icons8.com/?size=100&id=aWBc8fucFZnx&format=png&color=000000",
+      context: "Um dia bom e aconchegante, ganhe R$100 reais",
+      effect: eventEffect[2]
+    }
+  ]);
+  const [gameOver, setGameOver] = useState([
+    {
+      message: "Você faliu!",
+      context: "O limite de 500 reais negativos foi excedido, você perdeu!",
+    },
+    {
+      message: "Você venceu!",
+      context: "Você conseguiu sair de casa, parabéns!",
+    }
+  ])
+  const [currentEvent, setCurrentEvent] = useState<Event>(eventsList[0]);
+  const [hunger, setHunger] = useState (0);
+  const [energy, setEnergy] = useState (100);
+  const [income, setIncome] = useState(100);
+  const [expense, setExpense] = useState(20);
+  const [money, setMoney] = useState(0);
+  const [card, setCard] = useState(0);
+  const [day, setDay] = useState(0);
+  const [gameState, setGameState] = useState<GameState>({
+    normal: false,
+    rainy: false,
+    sunny: false
+  })
+  const [showAlert, setShowAlert] = useState(false);
+  const [disableAlert, setDisableAlert] = useState(false);
+
+
+  const handleEvent = () =>{
+    setShowAlert(false);
+
+    let eventTriggerRoll = Math.floor(Math.random() * 100);
+    console.log("Roll de triggar um evento: ", eventTriggerRoll)
+
+    if(eventTriggerRoll > 20){
+      return;
+    }
+
+    let lottery = Math.floor(Math.random() * 10);
+    
+
+    let roll = 0;
+
+    for(let i = lottery; i > 0; i--){
+      if(roll <= eventsList.length - 1){
+        roll++;
+      }
+      if(roll > eventsList.length - 1){
+        roll = 0;
+      }
+    }
+
+    console.log(lottery, roll, eventsList[roll]);
+    eventsList[roll].effect();
+    switch(eventsList[roll].name){
+      case "Dia normal":
+        gameState.normal = true;
+        gameState.rainy = false;
+        gameState.sunny = false;
+        break;
+      case "Dia ruim":
+        gameState.normal = false;
+        gameState.rainy = true;
+        gameState.sunny = false;
+        break;
+      case "Dia bom":
+        gameState.normal = false;
+        gameState.rainy = false;
+        gameState.sunny = true;
+        break;
+    }
+    console.log(money);
+    setCurrentEvent(eventsList[roll]);
+    setShowAlert(true);
+  }
+  const handleIncome = () =>{
+    setMoney(prev => Math.floor(prev + (income - expense)));
+    console.log(money, income, expense)
+  }
+
+  const handleDay = () =>{
+    setDay(day + 1);
+    handleEvent();
+    handleIncome();
+    console.log("disable alert", disableAlert)
+  }
+
+  useEffect(() =>{
+    if(money < -500){
+      setScreen("gameover");
+    }
+  },[money])
+
+
+  switch(screen){
+    case "menu":
+      return <MainMenu onNavigate={setScreen} 
+      handleFun={() => handleDay()}
+      name={name} 
+      profilePicture={profilePicture}
+      day={day} 
+      hunger={hunger}
+      money={money} 
+      income={income}
+      expense={expense}
+      card={card}
+      showAlert={showAlert}
+      setShowAlert={setShowAlert}
+      disableAlert={disableAlert}
+      setDisableAlert={setDisableAlert}
+      gameState={gameState}
+      event={currentEvent}
+      setWhereToGo={setWhereToGo} />;
+    case "shop":
+      return <Shop onNavigate={setScreen}
+      money={money}
+      setMoney={setMoney}
+      items={items}
+      setItems={setItems}
+      shopItems={shopItems}
+      setShopItems={setShopItems}
+      itemEffect={itemEffect}
+      setWhereToGo={setWhereToGo} />;
+    case "kitchen":
+      return <Kitchen onNavigate={setScreen}
+      setWhereToGo={setWhereToGo} />
+    case "configuration":
+      return <Configuration onNavigate={setScreen}
+      disableAlert={disableAlert}
+      setDisableAlert={setDisableAlert} />
+    case "items":
+      return <Items onNavigate={setScreen} 
+      items={items}
+      setWhereToGo={setWhereToGo} />;
+    case "start":
+      return <Start onNavigate={setScreen} />;
+    case "profile":
+      return <UserCustom onNavigate={setScreen} 
+      name={name} 
+      setName={setName}
+      profilePicture={profilePicture}
+      setProfilePicture={setProfilePicture} />;
+    case "canvas":
+      return <Canvas 
+      //onNavigate={setScreen}
+       />
+    case "currency":
+      return <CurrencyHistory onNavigate={setScreen} 
+      money={money}
+      income={income}
+      expense={expense} />;
+    case "gameover":
+      return <GameOver onNavigate={setScreen}
+      gameOver={gameOver[currentGameOver]}
+      day={day}
+      money={money}
+      income={income}
+      expense={expense}
+      items={items} />;
+    case "transition":
+      return <Transition onNavigate={setScreen}
+      whereToGo={whereToGo}
+      setWhereToGo={setWhereToGo} />
+  }
+
+  return (
+    <>
+    </>
+  )
+}
+
+export default App
